@@ -4,5 +4,8 @@
     <Compile Update="App.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Matrices.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

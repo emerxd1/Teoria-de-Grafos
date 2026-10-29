@@ -85,14 +85,14 @@
             tabcontrolMatricez = new Sunny.UI.UITabControl();
             MatrizIncidencia = new TabPage();
             dgvMatrizI = new DataGridView();
-            aMI = new DataGridViewTextBoxColumn();
-            bMI = new DataGridViewTextBoxColumn();
             Matrizadyacencia = new TabPage();
             dgvMatrizA = new DataGridView();
-            aMA = new DataGridViewTextBoxColumn();
-            bMA = new DataGridViewTextBoxColumn();
             b = new DataGridViewTextBoxColumn();
             a = new DataGridViewTextBoxColumn();
+            aMI = new DataGridViewTextBoxColumn();
+            bMI = new DataGridViewTextBoxColumn();
+            aMA = new DataGridViewTextBoxColumn();
+            bMA = new DataGridViewTextBoxColumn();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             uiTitlePanel1.SuspendLayout();
@@ -966,32 +966,20 @@
             dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
             dgvMatrizI.DefaultCellStyle = dataGridViewCellStyle6;
             dgvMatrizI.EnableHeadersVisualStyles = false;
-            dgvMatrizI.Location = new Point(28, 12);
+            dgvMatrizI.Location = new Point(3, 12);
             dgvMatrizI.Name = "dgvMatrizI";
             dgvMatrizI.ReadOnly = true;
             dgvMatrizI.RowHeadersVisible = false;
             dgvMatrizI.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMatrizI.Size = new Size(308, 139);
+            dgvMatrizI.Size = new Size(633, 219);
             dgvMatrizI.TabIndex = 17;
-            // 
-            // aMI
-            // 
-            aMI.HeaderText = "A";
-            aMI.Name = "aMI";
-            aMI.ReadOnly = true;
-            // 
-            // bMI
-            // 
-            bMI.HeaderText = "B";
-            bMI.Name = "bMI";
-            bMI.ReadOnly = true;
             // 
             // Matrizadyacencia
             // 
             Matrizadyacencia.Controls.Add(dgvMatrizA);
             Matrizadyacencia.Location = new Point(0, 40);
             Matrizadyacencia.Name = "Matrizadyacencia";
-            Matrizadyacencia.Size = new Size(200, 60);
+            Matrizadyacencia.Size = new Size(639, 244);
             Matrizadyacencia.TabIndex = 0;
             Matrizadyacencia.Text = "Matriz de adyacencia";
             Matrizadyacencia.UseVisualStyleBackColor = true;
@@ -1025,25 +1013,13 @@
             dataGridViewCellStyle8.WrapMode = DataGridViewTriState.False;
             dgvMatrizA.DefaultCellStyle = dataGridViewCellStyle8;
             dgvMatrizA.EnableHeadersVisualStyles = false;
-            dgvMatrizA.Location = new Point(35, 12);
+            dgvMatrizA.Location = new Point(16, 12);
             dgvMatrizA.Name = "dgvMatrizA";
             dgvMatrizA.ReadOnly = true;
             dgvMatrizA.RowHeadersVisible = false;
             dgvMatrizA.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMatrizA.Size = new Size(308, 139);
+            dgvMatrizA.Size = new Size(607, 219);
             dgvMatrizA.TabIndex = 16;
-            // 
-            // aMA
-            // 
-            aMA.HeaderText = "A";
-            aMA.Name = "aMA";
-            aMA.ReadOnly = true;
-            // 
-            // bMA
-            // 
-            bMA.HeaderText = "B";
-            bMA.Name = "bMA";
-            bMA.ReadOnly = true;
             // 
             // b
             // 
@@ -1056,6 +1032,34 @@
             a.HeaderText = "A";
             a.Name = "a";
             a.ReadOnly = true;
+            // 
+            // aMI
+            // 
+            aMI.HeaderText = "A";
+            aMI.Name = "aMI";
+            aMI.ReadOnly = true;
+            aMI.Width = 200;
+            // 
+            // bMI
+            // 
+            bMI.HeaderText = "B";
+            bMI.Name = "bMI";
+            bMI.ReadOnly = true;
+            bMI.Width = 200;
+            // 
+            // aMA
+            // 
+            aMA.HeaderText = "A";
+            aMA.Name = "aMA";
+            aMA.ReadOnly = true;
+            aMA.Width = 200;
+            // 
+            // bMA
+            // 
+            bMA.HeaderText = "B";
+            bMA.Name = "bMA";
+            bMA.ReadOnly = true;
+            bMA.Width = 200;
             // 
             // App
             // 
