@@ -1,18 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\",
+  "WorkspaceRootPath": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\andres castellon\\source\\repos\\labgrafosmd\\main\\app.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:app.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\jose guerrero\\source\\repos\\teoria-de-grafos\\app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\andres castellon\\source\\repos\\labgrafosmd\\main\\app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\jose guerrero\\source\\repos\\teoria-de-grafos\\app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\andres castellon\\source\\repos\\labgrafosmd\\main\\app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:app.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\jose guerrero\\source\\repos\\teoria-de-grafos\\matrices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:matrices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|c:\\users\\jose guerrero\\source\\repos\\teoria-de-grafos\\app.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F30BE69-823D-6DE2-E568-8862775628EF}|Main.csproj|solutionrelative:app.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,21 +34,54 @@
             },
             {
               "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
               "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Matrices.cs",
+              "DocumentMoniker": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\Matrices.cs",
+              "RelativeDocumentMoniker": "Matrices.cs",
+              "ToolTip": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\Matrices.cs",
+              "RelativeToolTip": "Matrices.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAywFgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-28T23:53:38.585Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "App.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.cs",
+              "RelativeDocumentMoniker": "App.cs",
+              "ToolTip": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.cs [Dise\u00F1o]*",
+              "RelativeToolTip": "App.cs [Dise\u00F1o]*",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-28T23:00:37.704Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "App.Designer.cs",
-              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.Designer.cs",
               "RelativeDocumentMoniker": "App.Designer.cs",
-              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.Designer.cs",
-              "RelativeToolTip": "App.Designer.cs",
-              "ViewState": "AgIAAGUBAAAAAAAAAAAewHYBAAAAAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.Designer.cs*",
+              "RelativeToolTip": "App.Designer.cs*",
+              "ViewState": "AgIAAEUEAAAAAAAAAADwv1UEAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-27T05:24:48.281Z",
               "EditorCaption": ""
@@ -53,26 +90,14 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "App.cs",
-              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.cs",
+              "DocumentMoniker": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.cs",
               "RelativeDocumentMoniker": "App.cs",
-              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.cs",
-              "RelativeToolTip": "App.cs",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAcwE0AAAAJAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Jose Guerrero\\source\\repos\\Teoria-de-Grafos\\App.cs*",
+              "RelativeToolTip": "App.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADMAAABuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-27T05:04:02.507Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "App.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.cs",
-              "RelativeDocumentMoniker": "App.cs",
-              "ToolTip": "C:\\Users\\Andres Castellon\\source\\repos\\LabGrafosMD\\Main\\App.cs [Dise\u00F1o]",
-              "RelativeToolTip": "App.cs [Dise\u00F1o]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-27T04:10:20.71Z",
-              "EditorCaption": " [Dise\u00F1o]"
             }
           ]
         }

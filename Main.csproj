@@ -28,4 +28,12 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Jose Guerrero\source\repos\Teoria-de-Grafos\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Jose Guerrero\source\repos\Teoria-de-Grafos\.editorconfig" />
+  </ItemGroup>
+
 </Project>
