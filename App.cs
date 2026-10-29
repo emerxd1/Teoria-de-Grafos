@@ -92,7 +92,7 @@ namespace Main
 
         private void btnDeleteVertice_Click(object sender, EventArgs e)
         {
-            // // verificamos que haya una fila seleccionada
+            // verificamos que haya una fila seleccionada
             if (dgvVertices.CurrentRow == null || dgvVertices.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Seleccione un vértice para eliminar.");
@@ -151,7 +151,10 @@ namespace Main
 
             ConfigurarMatriz(dgvMatrizI);
             ConfigurarMatriz(dgvMatrizA);
-            RefrescarMatrices(); 
+            RefrescarMatrices();
+
+            ConfigurarPaneles();   // crea el lienzo y el cuadro de analisis
+            RefrescarDibujo();     // dibuja el grafo
         }
 
         //tipo de grafos
@@ -285,7 +288,8 @@ namespace Main
                 fila.Cells[2].Value = string.Join(", ", conexiones);
             }
 
-            RefrescarMatrices();   // NUEVO
+            RefrescarMatrices();
+            RefrescarDibujo();   // mantiene el dibujo actualizado
         }
 
         // llenamos los combos con los vertices actuales y conservamos la seleccion si sigue existiendo
@@ -304,7 +308,7 @@ namespace Main
         }
 
 
-        //algirimos
+        //algoritmos
         private void btnEjecutarAlg_Click(object sender, EventArgs e)
         {
             string algoritmo = cbAlgoritmos.SelectedItem?.ToString();
@@ -468,6 +472,80 @@ namespace Main
 
             return "Camino más corto: " + string.Join(" → ", camino) +
                    "\nCosto total: " + dist[destino].ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        // ============ botones de la parte superior ============
+
+        // se deja vacio porque el diseñador lo tenia enlazado (el boton Agregar de aristas
+        // funciona con btnAddAristas_Click, enlazado en ConfigurarGrafo)
+        private void btnAddAristas_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCrearGrafo_Click(object sender, EventArgs e)
+        {
+            if (vertices.Count == 0)
+            {
+                MessageBox.Show("Agregue al menos un vértice.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            lienzo.Distribuir();   // vuelve a acomodar los vertices en circulo
+            RefrescarDibujo();
+        }
+
+        private void btnAnalizar_Click(object sender, EventArgs e)
+        {
+            if (vertices.Count == 0)
+            {
+                MessageBox.Show("Agregue al menos un vértice para analizar.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var analizador = new AnalizadorGrafo(vertices, AristasComoTuplas(),
+                                                 CheckDirigido.Checked, CheckPonderado.Checked);
+
+            txtAnalisis.Clear();
+            foreach (var linea in analizador.Reporte().TrimEnd('\n').Split('\n'))
+            {
+                bool titulo = linea.StartsWith("# ");
+
+                txtAnalisis.SelectionStart = txtAnalisis.TextLength;
+                txtAnalisis.SelectionLength = 0;
+                txtAnalisis.SelectionFont = new Font("Segoe UI", 10F, titulo ? FontStyle.Bold : FontStyle.Regular);
+                txtAnalisis.SelectionColor = titulo ? Color.FromArgb(79, 70, 229) : Color.FromArgb(48, 48, 48);
+                txtAnalisis.SelectedText = (titulo ? linea.Substring(2) : linea) + "\n";
+            }
+
+            txtAnalisis.SelectionStart = 0;
+            txtAnalisis.ScrollToCaret();
+        }
+
+        private void btnReestablecer_Click(object sender, EventArgs e)
+        {
+            var r = MessageBox.Show("¿Borrar todo el grafo?", "Confirmar",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (r != DialogResult.Yes) return;
+
+            vertices.Clear();
+            aristas.Clear();
+            dgvVertices.Rows.Clear();
+            dgvAristas.Rows.Clear();
+            txtVertice.Clear();
+            txtPeso.Clear();
+
+            CheckNoDirigido.Checked = true;
+            CheckDirigido.Checked = false;
+            CheckPonderado.Checked = false;
+
+            ActualizarCombos();
+            btnReiniciarAlg_Click(null, EventArgs.Empty);
+            RefrescarAristas();
+            RefrescarGrados();      // refresca matrices y dibujo
+            lienzo.Distribuir();
+
+            txtAnalisis.Text = "Presione \"Analizar\" para ver las propiedades del grafo.";
         }
     }
 
