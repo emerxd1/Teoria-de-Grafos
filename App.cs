@@ -7,6 +7,7 @@ namespace Main
             InitializeComponent();
             ConfigurarGrafo();
         }
+
         List<string> vertices = new List<string>();
 
         // estructura de una arista y lista de aristas
@@ -18,6 +19,21 @@ namespace Main
         }
         List<Arista> aristas = new List<Arista>();
         bool cambiandoTipo = false;
+
+        // ====== tabla paso a paso + animacion de algoritmos ======
+        Sunny.UI.UISymbolButton btnPasoAlg;
+        Label lblResultadoAlg;
+        System.Windows.Forms.Timer timerAlg;
+
+        string[] pasosColumnas;
+        List<string[]> pasosFilas = new List<string[]>();
+        List<string> pasosNodo = new List<string>();     // vertice visitado en cada fila
+        List<string> pasosPadre = new List<string>();    // de donde se llego (null si es el origen)
+        List<string> pasosCamino = new List<string>();   // camino final (solo Dijkstra)
+        string pasosResultado = "";
+        int pasosMostrados = 0;
+        bool pasosListos = false;
+        string pasosClave = "";   // algoritmo|origen|destino con el que se calcularon
 
         private void poisonDataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -31,7 +47,6 @@ namespace Main
 
         private void btnAddVertice_Click(object sender, EventArgs e)
         {
-
             string vertice = txtVertice.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(vertice))
@@ -153,8 +168,9 @@ namespace Main
             ConfigurarMatriz(dgvMatrizA);
             RefrescarMatrices();
 
-            ConfigurarPaneles();   // crea el lienzo y el cuadro de analisis
-            RefrescarDibujo();     // dibuja el grafo
+            ConfigurarPaneles();           // crea el lienzo y el cuadro de analisis
+            ConfigurarPanelAlgoritmos();   // panel de algoritmos con tabla paso a paso
+            RefrescarDibujo();             // dibuja el grafo
         }
 
         //tipo de grafos
@@ -269,6 +285,8 @@ namespace Main
         // aqui actualizamos las columnas de grado y de las conexiones de la tabla de los vertices
         private void RefrescarGrados()
         {
+            LimpiarTablaAlg();   // si cambia el grafo, la tabla y la animacion ya no son validas
+
             bool dirigido = CheckDirigido.Checked;
 
             foreach (DataGridViewRow fila in dgvVertices.Rows)
@@ -307,59 +325,6 @@ namespace Main
             }
         }
 
-
-        //algoritmos
-        private void btnEjecutarAlg_Click(object sender, EventArgs e)
-        {
-            string algoritmo = cbAlgoritmos.SelectedItem?.ToString();
-            string origen = cbOrigenAlg.SelectedItem?.ToString();
-            string destino = cbDestinoAlg.SelectedItem?.ToString();
-
-            if (algoritmo == null)
-            {
-                MessageBox.Show("Seleccione un algoritmo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (origen == null)
-            {
-                MessageBox.Show("Seleccione el vértice de origen.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string resultado;
-
-            if (algoritmo.StartsWith("Amplitud"))
-            {
-                resultado = Amplitud(origen, destino);
-            }
-            else if (algoritmo.StartsWith("Profundidad"))
-            {
-                resultado = Profundidad(origen, destino);
-            }
-            else
-            {
-                if (destino == null)
-                {
-                    MessageBox.Show("Dijkstra necesita un vértice de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (!CheckPonderado.Checked)
-                    resultado = "(Grafo no ponderado: todas las aristas valen 1)\n\n" + Dijkstra(origen, destino);
-                else
-                    resultado = Dijkstra(origen, destino);
-            }
-
-            MessageBox.Show(resultado, algoritmo, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void btnReiniciarAlg_Click(object sender, EventArgs e)
-        {
-            cbAlgoritmos.SelectedIndex = -1;
-            cbOrigenAlg.SelectedIndex = -1;
-            cbDestinoAlg.SelectedIndex = -1;
-        }
-
         // los vecinos de un vertice y respeta si el grafo es dirigido o no  y si es ponderado
         private List<(string nodo, double peso)> Vecinos(string v)
         {
@@ -377,69 +342,175 @@ namespace Main
             return res.OrderBy(x => vertices.IndexOf(x.nodo)).ToList();
         }
 
-        private string Amplitud(string origen, string destino)
+        // ================= panel de algoritmos =================
+        private void ConfigurarPanelAlgoritmos()
         {
-            var visitados = new HashSet<string> { origen };
-            var cola = new Queue<string>();
-            var orden = new List<string>();
-            bool encontrado = false;
+            uiTitlePanel5.Text = "Algoritmos de la guía";
 
-            cola.Enqueue(origen);
+            // etiquetas y combos a todo el ancho
+            label7.Location = new Point(10, 48);
+            label8.Location = new Point(10, 88);
+            label9.Location = new Point(10, 128);
+            cbAlgoritmos.SetBounds(96, 43, 215, 29);
+            cbOrigenAlg.SetBounds(96, 83, 215, 29);
+            cbDestinoAlg.SetBounds(96, 123, 215, 29);
 
-            while (cola.Count > 0)
+            // boton Paso (se crea por codigo)
+            btnPasoAlg = new Sunny.UI.UISymbolButton
             {
-                string actual = cola.Dequeue();
-                orden.Add(actual);
+                FillColor = Color.FromArgb(221, 224, 238),
+                FillHoverColor = Color.FromArgb(91, 105, 145),
+                FillPressColor = Color.Gray,
+                FillSelectedColor = Color.FromArgb(91, 105, 145),
+                Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(26, 45, 98),
+                SymbolColor = Color.FromArgb(26, 45, 98),
+                Symbol = 61521,
+                SymbolSize = 22,
+                Radius = 10,
+                RectColor = Color.White,
+                RectHoverColor = Color.White,
+                RectPressColor = Color.White,
+                RectSelectedColor = Color.White,
+                MinimumSize = new Size(1, 1),
+                Name = "btnPasoAlg",
+                Text = "Paso"
+            };
+            btnPasoAlg.Click += btnPasoAlg_Click;
+            uiTitlePanel5.Controls.Add(btnPasoAlg);
 
-                if (destino != null && actual == destino) { encontrado = true; break; }
+            btnEjecutarAlg.SetBounds(10, 168, 100, 35);
+            btnPasoAlg.SetBounds(116, 168, 90, 35);
+            btnReiniciarAlg.SetBounds(212, 168, 100, 35);
 
-                foreach (var (v, _) in Vecinos(actual))
-                    if (visitados.Add(v)) cola.Enqueue(v);
-            }
+            // tabla de visitas
+            dgvVisitas.SetBounds(10, 212, 301, 125);
+            dgvVisitas.ScrollBars = ScrollBars.Both;
 
-            string texto = "Orden de visita: " + string.Join(" → ", orden);
-            if (destino != null)
-                texto += encontrado ? $"\n\nSe llegó a {destino}." : $"\n\nNo se puede llegar a {destino} desde {origen}.";
-            return texto;
+            // resultado
+            lblResultadoAlg = new Label
+            {
+                Location = new Point(10, 344),
+                Size = new Size(301, 50),
+                BackColor = Color.FromArgb(236, 249, 245),
+                ForeColor = Color.FromArgb(26, 45, 98),
+                Font = new Font("Segoe UI", 10.5F),
+                Padding = new Padding(8, 4, 4, 4),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Text = "",
+                Visible = false
+            };
+            uiTitlePanel5.Controls.Add(lblResultadoAlg);
+
+            // temporizador de la animacion (Ejecutar avanza un paso por tick)
+            timerAlg = new System.Windows.Forms.Timer { Interval = 700 };
+            timerAlg.Tick += timerAlg_Tick;
         }
 
-        private string Profundidad(string origen, string destino)
+        // ---------- formato ----------
+        private string FormatoDist(double d) =>
+            double.IsPositiveInfinity(d) ? "∞" : d.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        // ---------- limpiar ----------
+        private void LimpiarTablaAlg()
         {
-            var visitados = new HashSet<string>();
-            var pila = new Stack<string>();
-            var orden = new List<string>();
-            bool encontrado = false;
+            timerAlg?.Stop();
 
-            pila.Push(origen);
+            pasosListos = false;
+            pasosMostrados = 0;
+            pasosFilas.Clear();
+            pasosNodo.Clear();
+            pasosPadre.Clear();
+            pasosCamino.Clear();
+            pasosResultado = "";
+            pasosClave = "";
 
-            while (pila.Count > 0)
+            if (dgvVisitas != null)
             {
-                string actual = pila.Pop();
-                if (!visitados.Add(actual)) continue;
-
-                orden.Add(actual);
-
-                if (destino != null && actual == destino) { encontrado = true; break; }
-
-                // se apilan al alreves para visitar primero al primer vecino
-                foreach (var (v, _) in Vecinos(actual).AsEnumerable().Reverse())
-                    if (!visitados.Contains(v)) pila.Push(v);
+                dgvVisitas.Rows.Clear();
+                dgvVisitas.Columns.Clear();
             }
-
-            string texto = "Orden de visita: " + string.Join(" → ", orden);
-            if (destino != null)
-                texto += encontrado ? $"\n\nSe llegó a {destino}." : $"\n\nNo se puede llegar a {destino} desde {origen}.";
-            return texto;
+            if (lblResultadoAlg != null)
+            {
+                lblResultadoAlg.Text = "";
+                lblResultadoAlg.Visible = false;
+            }
+            lienzo?.LimpiarResaltado();
         }
 
-        // Dijkstra
-
-        private string Dijkstra(string origen, string destino)
+        // ---------- columnas dinamicas ----------
+        private void ConstruirColumnasAlg()
         {
+            dgvVisitas.Rows.Clear();
+            dgvVisitas.Columns.Clear();
+
+            for (int i = 0; i < pasosColumnas.Length; i++)
+            {
+                var col = new DataGridViewTextBoxColumn
+                {
+                    HeaderText = pasosColumnas[i],
+                    Name = "colAlg" + i,
+                    ReadOnly = true,
+                    SortMode = DataGridViewColumnSortMode.NotSortable,
+                    MinimumWidth = 40,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                };
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvVisitas.Columns.Add(col);
+            }
+        }
+
+        // ---------- validar y calcular todos los pasos ----------
+        private bool PrepararAlgoritmo()
+        {
+            string algoritmo = cbAlgoritmos.SelectedItem?.ToString();
+            string origen = cbOrigenAlg.SelectedItem?.ToString();
+            string destino = cbDestinoAlg.SelectedItem?.ToString();
+
+            if (algoritmo == null)
+            {
+                MessageBox.Show("Seleccione un algoritmo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (origen == null)
+            {
+                MessageBox.Show("Seleccione el vértice de origen.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (algoritmo == "Dijkstra" && destino == null)
+            {
+                MessageBox.Show("Dijkstra necesita un vértice de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            LimpiarTablaAlg();
+
+            if (algoritmo.StartsWith("Amplitud")) PasosAmplitud(origen, destino);
+            else if (algoritmo.StartsWith("Profundidad")) PasosProfundidad(origen, destino);
+            else PasosDijkstra(origen, destino);
+
+            ConstruirColumnasAlg();
+            pasosClave = algoritmo + "|" + origen + "|" + destino;
+            pasosListos = true;
+            return true;
+        }
+
+        // agrega una fila a la tabla y guarda el vertice y su padre para la animacion
+        private void AgregarPaso(string[] fila, string nodo, string padre)
+        {
+            pasosFilas.Add(fila);
+            pasosNodo.Add(nodo);
+            pasosPadre.Add(padre);
+        }
+
+        private void PasosDijkstra(string origen, string destino)
+        {
+            pasosColumnas = new[] { "Visita" }.Concat(vertices).ToArray();
+
             var dist = vertices.ToDictionary(v => v, v => double.PositiveInfinity);
             var previo = new Dictionary<string, string>();
             var pendientes = new List<string>(vertices);
-
             dist[origen] = 0;
 
             while (pendientes.Count > 0)
@@ -448,30 +519,225 @@ namespace Main
                 if (double.IsPositiveInfinity(dist[u])) break;
 
                 pendientes.Remove(u);
-                if (u == destino) break;
+                if (u == destino) break;   // el destino ya es definitivo, no hace falta otra fila
 
                 foreach (var (v, peso) in Vecinos(u))
                 {
                     if (!pendientes.Contains(v)) continue;
-
                     double alt = dist[u] + peso;
-                    if (alt < dist[v])
-                    {
-                        dist[v] = alt;
-                        previo[v] = u;
-                    }
+                    if (alt < dist[v]) { dist[v] = alt; previo[v] = u; }
                 }
+
+                AgregarPaso(new[] { u }.Concat(vertices.Select(v => FormatoDist(dist[v]))).ToArray(),
+                            u, previo.ContainsKey(u) ? previo[u] : null);
             }
 
             if (double.IsPositiveInfinity(dist[destino]))
-                return $"No existe un camino de {origen} a {destino}.";
+            {
+                pasosResultado = $"No existe un camino de {origen} a {destino}.";
+                return;
+            }
 
             var camino = new List<string>();
             for (string x = destino; x != null; x = previo.ContainsKey(x) ? previo[x] : null)
                 camino.Insert(0, x);
 
-            return "Camino más corto: " + string.Join(" → ", camino) +
-                   "\nCosto total: " + dist[destino].ToString(System.Globalization.CultureInfo.InvariantCulture);
+            pasosCamino = camino;
+            pasosResultado = string.Join(" → ", camino) + "     d = " + FormatoDist(dist[destino]);
+        }
+
+        private void PasosAmplitud(string origen, string destino)
+        {
+            pasosColumnas = new[] { "Visita", "Cola" };
+
+            var visitados = new HashSet<string> { origen };
+            var padre = new Dictionary<string, string>();
+            var cola = new Queue<string>();
+            var orden = new List<string>();
+            bool encontrado = false;
+            cola.Enqueue(origen);
+
+            while (cola.Count > 0)
+            {
+                string actual = cola.Dequeue();
+                orden.Add(actual);
+                string p = padre.ContainsKey(actual) ? padre[actual] : null;
+
+                if (destino != null && actual == destino)
+                {
+                    encontrado = true;
+                    AgregarPaso(new[] { actual, string.Join(", ", cola) }, actual, p);
+                    break;
+                }
+
+                foreach (var (v, _) in Vecinos(actual))
+                    if (visitados.Add(v)) { cola.Enqueue(v); padre[v] = actual; }
+
+                AgregarPaso(new[] { actual, string.Join(", ", cola) }, actual, p);
+            }
+
+            pasosResultado = string.Join(" → ", orden);
+            if (destino != null)
+                pasosResultado += encontrado ? $"\nSe llegó a {destino}." : $"\nNo se puede llegar a {destino}.";
+        }
+
+        private void PasosProfundidad(string origen, string destino)
+        {
+            pasosColumnas = new[] { "Visita", "Pila" };
+
+            var visitados = new HashSet<string>();
+            var pila = new Stack<(string nodo, string padre)>();
+            var orden = new List<string>();
+            bool encontrado = false;
+            pila.Push((origen, null));
+
+            while (pila.Count > 0)
+            {
+                var (actual, padre) = pila.Pop();
+                if (!visitados.Add(actual)) continue;
+                orden.Add(actual);
+
+                if (destino != null && actual == destino)
+                {
+                    encontrado = true;
+                    AgregarPaso(new[] { actual, string.Join(", ", pila.Select(x => x.nodo)) }, actual, padre);
+                    break;
+                }
+
+                // se apilan al reves para visitar primero al primer vecino
+                foreach (var (v, _) in Vecinos(actual).AsEnumerable().Reverse())
+                    if (!visitados.Contains(v)) pila.Push((v, actual));
+
+                AgregarPaso(new[] { actual, string.Join(", ", pila.Select(x => x.nodo)) }, actual, padre);
+            }
+
+            pasosResultado = string.Join(" → ", orden);
+            if (destino != null)
+                pasosResultado += encontrado ? $"\nSe llegó a {destino}." : $"\nNo se puede llegar a {destino}.";
+        }
+
+        // ---------- mostrar una fila / el resultado ----------
+        private void MostrarSiguienteFila()
+        {
+            if (pasosMostrados >= pasosFilas.Count) return;
+
+            int idx = dgvVisitas.Rows.Add(pasosFilas[pasosMostrados]);
+            pasosMostrados++;
+
+            // resalta la celda del vertice recien visitado (solo en Dijkstra)
+            if (pasosColumnas.Length == vertices.Count + 1)
+            {
+                int col = vertices.IndexOf(pasosFilas[pasosMostrados - 1][0]) + 1;
+                if (col > 0)
+                {
+                    dgvVisitas.Rows[idx].Cells[col].Style.BackColor = Color.FromArgb(215, 213, 249);
+                    dgvVisitas.Rows[idx].Cells[col].Style.Font =
+                        new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+                }
+            }
+
+            dgvVisitas.FirstDisplayedScrollingRowIndex = idx;
+            dgvVisitas.ClearSelection();
+
+            ResaltarPaso(pasosMostrados - 1);
+        }
+
+        // pinta en el digrafo todo lo recorrido hasta la fila k
+        private void ResaltarPaso(int k)
+        {
+            if (lienzo == null || k < 0 || k >= pasosNodo.Count) return;
+
+            var visitados = pasosNodo.Take(k + 1).ToList();
+            var recorridas = new List<(string, string)>();
+            for (int i = 0; i <= k; i++)
+                if (pasosPadre[i] != null) recorridas.Add((pasosPadre[i], pasosNodo[i]));
+
+            lienzo.Resaltar(visitados, pasosNodo[k], recorridas);
+        }
+
+        // al terminar: Dijkstra deja solo el camino mas corto, BFS/DFS dejan el arbol del recorrido
+        private void ResaltarFinal()
+        {
+            if (lienzo == null) return;
+
+            if (pasosCamino.Count > 0)
+            {
+                var recorridas = new List<(string, string)>();
+                for (int i = 0; i < pasosCamino.Count - 1; i++)
+                    recorridas.Add((pasosCamino[i], pasosCamino[i + 1]));
+
+                lienzo.Resaltar(pasosCamino, pasosCamino[pasosCamino.Count - 1], recorridas);
+            }
+            else if (pasosNodo.Count > 0)
+            {
+                ResaltarPaso(pasosNodo.Count - 1);
+            }
+        }
+
+        private void MostrarResultadoAlg()
+        {
+            lblResultadoAlg.Text = pasosResultado;
+            lblResultadoAlg.Visible = true;
+        }
+
+        private void TerminarAlg()
+        {
+            timerAlg?.Stop();
+            MostrarResultadoAlg();
+            ResaltarFinal();
+        }
+
+        // ================= botones de algoritmos =================
+        private void btnEjecutarAlg_Click(object sender, EventArgs e)
+        {
+            if (!PrepararAlgoritmo()) return;
+
+            if (pasosFilas.Count == 0) { TerminarAlg(); return; }
+
+            // primer paso de inmediato y el resto animado
+            MostrarSiguienteFila();
+            if (pasosMostrados >= pasosFilas.Count) TerminarAlg();
+            else timerAlg.Start();
+        }
+
+        private void timerAlg_Tick(object sender, EventArgs e)
+        {
+            if (pasosMostrados < pasosFilas.Count)
+                MostrarSiguienteFila();
+
+            if (pasosMostrados >= pasosFilas.Count)
+                TerminarAlg();
+        }
+
+        private void btnPasoAlg_Click(object sender, EventArgs e)
+        {
+            timerAlg?.Stop();   // si estaba animando, pasa a modo manual
+
+            string claveActual = cbAlgoritmos.SelectedItem + "|" + cbOrigenAlg.SelectedItem + "|" + cbDestinoAlg.SelectedItem;
+
+            // si no hay pasos calculados o cambiaron las opciones, se empieza de nuevo
+            if (!pasosListos || claveActual != pasosClave)
+            {
+                if (!PrepararAlgoritmo()) return;
+            }
+
+            if (pasosMostrados >= pasosFilas.Count)
+            {
+                MessageBox.Show("El algoritmo ya terminó. Presione Reiniciar para volver a empezar.",
+                                "Paso a paso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            MostrarSiguienteFila();
+            if (pasosMostrados >= pasosFilas.Count) TerminarAlg();
+        }
+
+        private void btnReiniciarAlg_Click(object sender, EventArgs e)
+        {
+            cbAlgoritmos.SelectedIndex = -1;
+            cbOrigenAlg.SelectedIndex = -1;
+            cbDestinoAlg.SelectedIndex = -1;
+            LimpiarTablaAlg();   // detiene la animacion y limpia colores
         }
 
         // ============ botones de la parte superior ============
@@ -542,11 +808,10 @@ namespace Main
             ActualizarCombos();
             btnReiniciarAlg_Click(null, EventArgs.Empty);
             RefrescarAristas();
-            RefrescarGrados();      // refresca matrices y dibujo
+            RefrescarGrados();      // refresca matrices, dibujo y limpia la tabla de algoritmos
             lienzo.Distribuir();
 
             txtAnalisis.Text = "Presione \"Analizar\" para ver las propiedades del grafo.";
         }
     }
-
 }

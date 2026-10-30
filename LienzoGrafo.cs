@@ -6,6 +6,7 @@ namespace Main
     /// <summary>
     /// Control que dibuja el grafo (vértices, aristas, flechas y pesos).
     /// Los vértices se pueden arrastrar con el mouse.
+    /// Permite resaltar vértices y aristas para animar los recorridos.
     /// </summary>
     public class LienzoGrafo : Panel
     {
@@ -20,6 +21,14 @@ namespace Main
         private readonly Dictionary<string, PointF> pos = new();
         private bool manual;            // true si el usuario movió algún vértice
         private string arrastrando;
+
+        // ---------- resaltado para la animacion de algoritmos ----------
+        private HashSet<string> resVisitados = new();
+        private HashSet<(string, string)> resAristas = new();
+        private string resActual;
+
+        private static readonly Color ColorVisitado = Color.FromArgb(20, 184, 166);
+        private static readonly Color ColorActual = Color.FromArgb(245, 158, 11);
 
         public LienzoGrafo()
         {
@@ -63,6 +72,26 @@ namespace Main
             Invalidate();
         }
 
+        /// <summary>Marca vértices visitados, el vértice actual y las aristas recorridas.</summary>
+        public void Resaltar(IEnumerable<string> visitados, string actual,
+                             IEnumerable<(string, string)> aristasRecorridas)
+        {
+            resVisitados = new HashSet<string>(visitados);
+            resAristas = new HashSet<(string, string)>(aristasRecorridas);
+            resActual = actual;
+            Invalidate();
+        }
+
+        /// <summary>Quita todo el resaltado.</summary>
+        public void LimpiarResaltado()
+        {
+            if (resVisitados.Count == 0 && resAristas.Count == 0 && resActual == null) return;
+            resVisitados = new HashSet<string>();
+            resAristas = new HashSet<(string, string)>();
+            resActual = null;
+            Invalidate();
+        }
+
         // ---------- dibujo ----------
 
         private static PointF PosCircular(int i, int n)
@@ -82,6 +111,10 @@ namespace Main
             if (l < 0.001f) return desde;
             return new PointF(desde.X + dx / l * d, desde.Y + dy / l * d);
         }
+
+        // una arista esta resaltada si fue recorrida (en no dirigido vale cualquier sentido)
+        private bool EstaResaltada(string o, string d) =>
+            resAristas.Contains((o, d)) || (!dirigido && resAristas.Contains((d, o)));
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -104,7 +137,12 @@ namespace Main
             var existentes = new HashSet<(string, string)>(aristas.Select(a => (a.o, a.d)));
             using var cap = new AdjustableArrowCap(5, 6);
             using var pen = new Pen(Color.FromArgb(120, 130, 160), 2f);
-            if (dirigido) pen.CustomEndCap = cap;
+            using var penRes = new Pen(ColorVisitado, 4f);
+            if (dirigido)
+            {
+                pen.CustomEndCap = cap;
+                penRes.CustomEndCap = cap;
+            }
             using var fPeso = new Font("Segoe UI Semibold", 9.5f);
 
             foreach (var a in aristas)
@@ -126,7 +164,7 @@ namespace Main
                 var t = Mover(p2, q, R);
                 var c1 = new PointF(s.X + 2f / 3f * (q.X - s.X), s.Y + 2f / 3f * (q.Y - s.Y));
                 var c2 = new PointF(t.X + 2f / 3f * (q.X - t.X), t.Y + 2f / 3f * (q.Y - t.Y));
-                g.DrawBezier(pen, s, c1, c2, t);
+                g.DrawBezier(EstaResaltada(a.o, a.d) ? penRes : pen, s, c1, c2, t);
 
                 if (ponderado)
                 {
@@ -142,6 +180,8 @@ namespace Main
 
             // vértices
             using var relleno = new SolidBrush(Color.FromArgb(79, 70, 229));
+            using var rellenoVis = new SolidBrush(ColorVisitado);
+            using var rellenoAct = new SolidBrush(ColorActual);
             using var borde = new Pen(Color.White, 2f);
             using var fNodo = new Font("Segoe UI Semibold", 11f, FontStyle.Bold);
 
@@ -150,7 +190,12 @@ namespace Main
                 if (!pos.ContainsKey(v)) continue;
                 var p = Px(v);
                 var rect = new RectangleF(p.X - R, p.Y - R, 2 * R, 2 * R);
-                g.FillEllipse(relleno, rect);
+
+                Brush b = v == resActual ? rellenoAct
+                        : resVisitados.Contains(v) ? rellenoVis
+                        : relleno;
+
+                g.FillEllipse(b, rect);
                 g.DrawEllipse(borde, rect);
                 g.DrawString(v, fNodo, Brushes.White, rect, centro);
             }
